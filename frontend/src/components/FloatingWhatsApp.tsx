@@ -1,7 +1,8 @@
 import { useLocation } from 'react-router-dom'
 
 // Pages where the floating share button should appear (public-facing only).
-const PUBLIC_PATHS = ['/', '/registro', '/gracias', '/resultados', '/mapa']
+// Excludes '/' — the homepage already has its own Compartir button.
+const PUBLIC_PATHS = ['/registro', '/gracias', '/mapa']
 
 // Pre-filled message + link that opens in WhatsApp. The user just picks who to send it to.
 export function shareOnWhatsApp() {
