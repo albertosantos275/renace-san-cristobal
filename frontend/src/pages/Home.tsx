@@ -152,57 +152,74 @@ export default function Home() {
               Faltan {Math.max(0, meta - total).toLocaleString('es-DO')} para la meta
             </p>
           </div>
-
-          <Link
-            to="/registro"
-            className="btn-primary text-lg px-8 py-4 rounded-2xl inline-flex items-center gap-2 hover:scale-105 transform transition-all duration-200"
-          >
-            <Users size={20} />
-            ÚNETE AHORA
-          </Link>
         </div>
       </section>
 
-      {/* CTA SECTION */}
+      {/* UNIFIED ACTION SECTION — join + share + follow, all in one view */}
       <section className="bg-gradient-to-br from-primary-700 to-primary-900 text-white py-20 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-black mb-4">Tu voz importa</h2>
-          <p className="text-primary-200 text-lg mb-10 max-w-xl mx-auto">
-            Únete al censo ciudadano y ayuda a construir el San Cristóbal que todos merecemos.
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-black mb-3">Tu voz importa</h2>
+          <p className="text-primary-200 text-lg mb-8">
+            Únete al censo, comparte con tu gente y síguenos. Juntos construimos el San Cristóbal que merecemos.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/registro" className="btn-primary bg-white text-primary-700 hover:bg-yellow-300 hover:text-primary-800 text-lg px-8 py-4 rounded-2xl font-bold inline-flex items-center justify-center gap-2">
-              <Users size={20} />
-              Regístrate Ahora
-            </Link>
-            <button
-              onClick={whatsappShare}
-              className="btn-secondary border-white text-white hover:bg-white/10 text-lg px-8 py-4 rounded-2xl font-bold inline-flex items-center justify-center gap-2 border-2"
+
+          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-5">
+            {/* Primary action: join */}
+            <Link
+              to="/registro"
+              className="w-full flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-800 text-white font-bold text-lg px-6 py-4 rounded-2xl transition-all duration-200 hover:scale-[1.02]"
             >
-              <Share2 size={20} />
-              Compartir por WhatsApp
-            </button>
+              <Users size={22} />
+              REGÍSTRATE AHORA
+            </Link>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+              <div className="flex-1 h-px bg-gray-200" />
+              Ayúdanos a crecer
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+
+            {/* Secondary actions: share + follow */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={whatsappShare}
+                className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold px-4 py-3.5 rounded-2xl transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Share2 size={18} />
+                Compartir
+              </button>
+              <a
+                href="https://www.instagram.com/oliver_santos2424"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-semibold px-4 py-3.5 rounded-2xl transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Instagram size={18} />
+                Seguir
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
       <footer className="bg-primary-900 text-primary-300 py-8 px-4 text-center text-sm">
-        <p className="font-semibold text-white mb-1">Renace San Cristóbal 2028</p>
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <p className="font-semibold text-white">Renace San Cristóbal 2028</p>
+          <a
+            href="https://www.instagram.com/oliver_santos2424"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Síguenos en Instagram"
+            className="text-primary-300 hover:text-white transition-colors"
+          >
+            <Instagram size={18} />
+          </a>
+        </div>
         <p>Movimiento Ciudadano · Censo Democrático Participativo</p>
 
-        {/* Instagram follow */}
-        <a
-          href="https://www.instagram.com/oliver_santos2424"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-5 inline-flex items-center gap-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-semibold px-5 py-2.5 rounded-full hover:opacity-90 hover:scale-105 transition-all duration-200"
-        >
-          <Instagram size={18} />
-          Síguenos en Instagram
-        </a>
-
-        <div className="flex justify-center gap-6 mt-6 text-xs">
+        <div className="flex justify-center gap-6 mt-4 text-xs">
           <Link to="/" className="hover:text-white transition-colors">Inicio</Link>
           <Link to="/registro" className="hover:text-white transition-colors">Registro</Link>
           <Link to="/login" className="hover:text-white transition-colors">Acceso</Link>
