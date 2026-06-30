@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, Share2, Star, ArrowRight } from 'lucide-react'
+import { Users, Share2, Star, ArrowRight, Instagram } from 'lucide-react'
 import api from '../lib/api'
 import { PublicStats } from '../types'
 
@@ -190,7 +190,19 @@ export default function Home() {
       <footer className="bg-primary-900 text-primary-300 py-8 px-4 text-center text-sm">
         <p className="font-semibold text-white mb-1">Renace San Cristóbal 2028</p>
         <p>Movimiento Ciudadano · Censo Democrático Participativo</p>
-        <div className="flex justify-center gap-6 mt-4 text-xs">
+
+        {/* Instagram follow */}
+        <a
+          href="https://www.instagram.com/oliver_santos2424"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 inline-flex items-center gap-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-semibold px-5 py-2.5 rounded-full hover:opacity-90 hover:scale-105 transition-all duration-200"
+        >
+          <Instagram size={18} />
+          Síguenos en Instagram
+        </a>
+
+        <div className="flex justify-center gap-6 mt-6 text-xs">
           <Link to="/" className="hover:text-white transition-colors">Inicio</Link>
           <Link to="/registro" className="hover:text-white transition-colors">Registro</Link>
           <Link to="/login" className="hover:text-white transition-colors">Acceso</Link>
