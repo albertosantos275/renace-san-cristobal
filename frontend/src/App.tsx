@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Register from './pages/Register'
 import Thanks from './pages/Thanks'
 import Results from './pages/Results'
+import Estadisticas from './pages/Estadisticas'
 import Login from './pages/Login'
 import MapPage from './pages/Map'
 
@@ -64,6 +65,7 @@ function AppRoutes() {
         <Route path="promotores" element={<AdminPromoters />} />
         <Route path="voluntarios" element={<AdminVolunteers />} />
         <Route path="reportes" element={<AdminReports />} />
+        <Route path="estadisticas" element={<Estadisticas />} />
         <Route path="configuracion" element={<AdminSettings />} />
       </Route>
 
@@ -73,6 +75,7 @@ function AppRoutes() {
         <Route path="registro" element={<PromoterRegister />} />
         <Route path="mis-ciudadanos" element={<PromoterMyCitizens />} />
         <Route path="ranking" element={<PromoterRanking />} />
+        <Route path="estadisticas" element={<Estadisticas />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

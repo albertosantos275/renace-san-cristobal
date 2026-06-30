@@ -8,7 +8,7 @@ const navItems = [
   { to: '/promotor/registro', label: 'Registrar Ciudadano', icon: UserPlus },
   { to: '/promotor/mis-ciudadanos', label: 'Mis Ciudadanos', icon: Users },
   { to: '/promotor/ranking', label: 'Ranking', icon: Trophy },
-  { to: '/resultados', label: 'Estadísticas', icon: BarChart3 },
+  { to: '/promotor/estadisticas', label: 'Estadísticas', icon: BarChart3 },
 ]
 
 export default function PromoterLayout() {

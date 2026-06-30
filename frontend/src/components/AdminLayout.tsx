@@ -12,7 +12,7 @@ const navItems = [
   { to: '/admin/promotores', label: 'Promotores', icon: UserCheck },
   { to: '/admin/voluntarios', label: 'Voluntarios', icon: Heart },
   { to: '/admin/reportes', label: 'Reportes', icon: BarChart3 },
-  { to: '/resultados', label: 'Estadísticas', icon: TrendingUp },
+  { to: '/admin/estadisticas', label: 'Estadísticas', icon: TrendingUp },
   { to: '/admin/configuracion', label: 'Configuración', icon: Settings },
 ]
 
