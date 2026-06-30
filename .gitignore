@@ -1,0 +1,20 @@
+# dependencies
+**/node_modules
+
+# build output
+**/dist
+frontend/public
+
+# env / secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# local SQLite database
+**/*.db
+**/*.db-journal
+
+# logs / OS
+*.log
+.DS_Store
+Thumbs.db

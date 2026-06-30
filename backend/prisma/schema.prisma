@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  nombre        String
+  email         String    @unique
+  passwordHash  String
+  rol           String    @default("PROMOTER")
+  sectores      String    @default("[]")
+  activo        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  ciudadanos         Citizen[]           @relation("RegistradoPor")
+  auditLogs          AuditLog[]
+  registrationEvents RegistrationEvent[] @relation("PromoterEvents")
+}
+
+model Sector {
+  id           Int      @id @default(autoincrement())
+  nombre       String   @unique
+  municipality String   @default("San Cristóbal")
+  province     String   @default("San Cristóbal")
+  zone         String?
+  centerLat    Float?
+  centerLng    Float?
+  polygon      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  citizens           Citizen[]           @relation("CitizenSectorGeo")
+  citizenLocations   CitizenLocation[]
+  registrationEvents RegistrationEvent[]
+}
+
+model Citizen {
+  id                    Int       @id @default(autoincrement())
+  nombreCompleto        String
+  cedula                String    @unique
+  telefono              String    @unique
+  edad                  Int?
+  sexo                  String?
+  sector                String?
+  sectorGeoId           Int?
+  sectorGeo             Sector?   @relation("CitizenSectorGeo", fields: [sectorGeoId], references: [id])
+  votaEnSanCristobal    Boolean   @default(true)
+  whatsappUpdates       Boolean   @default(false)
+  voluntario            Boolean   @default(false)
+  nivelApoyo            String    @default("NEUTRAL")
+  prioridades           String    @default("[]")
+  problemaComunidad     String?
+  scorePolit            Int       @default(0)
+  registradoPorId       Int?
+  registradoPor         User?     @relation("RegistradoPor", fields: [registradoPorId], references: [id])
+  referidoPorId         Int?
+  referidoPor           Citizen?  @relation("Referidos", fields: [referidoPorId], references: [id])
+  referidos             Citizen[] @relation("Referidos")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  location           CitizenLocation?
+  registrationEvents RegistrationEvent[]
+}
+
+model CitizenLocation {
+  id             Int      @id @default(autoincrement())
+  citizenId      Int      @unique
+  citizen        Citizen  @relation(fields: [citizenId], references: [id])
+  sectorId       Int?
+  sector         Sector?  @relation(fields: [sectorId], references: [id])
+  latitude       Float?
+  longitude      Float?
+  locationSource String   @default("manual_sector")
+  accuracyMeters Float?
+  addressText    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model RegistrationEvent {
+  id                 Int      @id @default(autoincrement())
+  citizenId          Int
+  citizen            Citizen  @relation(fields: [citizenId], references: [id])
+  promoterId         Int?
+  promoter           User?    @relation("PromoterEvents", fields: [promoterId], references: [id])
+  sectorId           Int?
+  sector             Sector?  @relation(fields: [sectorId], references: [id])
+  registrationLat    Float?
+  registrationLng    Float?
+  registrationMethod String   @default("web_form")
+  createdAt          DateTime @default(now())
+}
+
+model Config {
+  id        Int      @id @default(autoincrement())
+  clave     String   @unique
+  valor     String
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id])
+  accion     String
+  entidad    String
+  entidadId  String?
+  detalle    String?
+  createdAt  DateTime @default(now())
+}
+
