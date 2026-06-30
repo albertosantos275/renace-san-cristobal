@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Share2, Star, ArrowRight, Instagram } from 'lucide-react'
+import { Share2, Star, ArrowRight, Instagram, LogOut } from 'lucide-react'
 import api from '../lib/api'
+import { useAuth } from '../hooks/useAuth'
 import { PublicStats } from '../types'
 
 function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
@@ -41,6 +42,7 @@ function whatsappShare() {
 export default function Home() {
   const [stats, setStats] = useState<PublicStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const { user, logout, isAdmin } = useAuth()
 
   useEffect(() => {
     api.get('/stats/public')
@@ -73,16 +75,42 @@ export default function Home() {
             <span className="text-white">Renace</span>
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/login" className="text-primary-100 hover:text-white text-sm font-medium transition-colors">
-              Acceder
-            </Link>
-            <Link
-              to="/registro"
-              className="bg-white text-primary-700 hover:bg-primary-50 font-semibold text-sm px-4 py-2 rounded-lg transition-all"
-            >
-              Regístrate
-            </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {user ? (
+              <>
+                {/* Logged-in: name links to the user's panel */}
+                <Link
+                  to={isAdmin ? '/admin' : '/promotor'}
+                  className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors"
+                  title="Ir a mi panel"
+                >
+                  <div className="w-8 h-8 rounded-full bg-white/15 border border-white/25 flex items-center justify-center font-bold text-sm">
+                    {user.nombre?.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden sm:inline text-sm font-medium max-w-[8rem] truncate">{user.nombre}</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium px-3 py-2 rounded-lg transition-all"
+                  title="Cerrar sesión"
+                >
+                  <LogOut size={16} />
+                  <span className="hidden sm:inline">Salir</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-primary-100 hover:text-white text-sm font-medium transition-colors">
+                  Acceder
+                </Link>
+                <Link
+                  to="/registro"
+                  className="bg-white text-primary-700 hover:bg-primary-50 font-semibold text-sm px-4 py-2 rounded-lg transition-all"
+                >
+                  Regístrate
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
