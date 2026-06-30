@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './hooks/useAuth'
+import FloatingWhatsApp from './components/FloatingWhatsApp'
 
 // Public pages
 import Home from './pages/Home'
@@ -38,6 +39,13 @@ function ProtectedPromoter({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+// Any authenticated user (admin or promoter). Used to gate the statistics page.
+function ProtectedAuth({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+  if (!user) return <Navigate to="/login" replace />
+  return <>{children}</>
+}
+
 function AppRoutes() {
   return (
     <Routes>
@@ -45,7 +53,7 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/registro" element={<Register />} />
       <Route path="/gracias" element={<Thanks />} />
-      <Route path="/resultados" element={<Results />} />
+      <Route path="/resultados" element={<ProtectedAuth><Results /></ProtectedAuth>} />
       <Route path="/login" element={<Login />} />
       <Route path="/mapa" element={<MapPage />} />
 
@@ -77,6 +85,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <FloatingWhatsApp />
       </AuthProvider>
     </BrowserRouter>
   )

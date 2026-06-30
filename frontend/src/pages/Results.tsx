@@ -11,7 +11,7 @@ export default function Results() {
   const [stats, setStats] = useState<PublicStats | null>(null)
 
   useEffect(() => {
-    api.get('/stats/public').then(r => setStats(r.data)).catch(() => {})
+    api.get('/stats/results').then(r => setStats(r.data)).catch(() => {})
   }, [])
 
   const meta = stats?.meta ?? 50000
@@ -27,7 +27,7 @@ export default function Results() {
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
           <Link to="/" className="p-1.5 hover:bg-primary-600 rounded-lg"><ChevronLeft size={22} /></Link>
           <div>
-            <div className="font-bold">Estadísticas Públicas</div>
+            <div className="font-bold">Estadísticas</div>
             <div className="text-primary-300 text-xs">Renace San Cristóbal 2028</div>
           </div>
         </div>

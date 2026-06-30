@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { UserPlus, Users, Trophy, LayoutDashboard, LogOut, Menu, X } from 'lucide-react'
+import { UserPlus, Users, Trophy, LayoutDashboard, BarChart3, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/promotor/registro', label: 'Registrar Ciudadano', icon: UserPlus },
   { to: '/promotor/mis-ciudadanos', label: 'Mis Ciudadanos', icon: Users },
   { to: '/promotor/ranking', label: 'Ranking', icon: Trophy },
+  { to: '/resultados', label: 'Estadísticas', icon: BarChart3 },
 ]
 
 export default function PromoterLayout() {

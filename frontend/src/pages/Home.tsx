@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, TrendingUp, MessageCircle, Share2, MapPin, ChevronRight, Star, ArrowRight } from 'lucide-react'
+import { Users, Share2, Star, ArrowRight } from 'lucide-react'
 import api from '../lib/api'
 import { PublicStats } from '../types'
 
@@ -32,10 +32,6 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
 
   return <span ref={ref}>{count.toLocaleString('es-DO')}</span>
 }
-
-const PRIORIDAD_COLORS = [
-  'bg-primary-600', 'bg-primary-500', 'bg-primary-400', 'bg-primary-300', 'bg-primary-200'
-]
 
 function whatsappShare() {
   const msg = encodeURIComponent('¡Me uní al Censo Ciudadano Renace San Cristóbal 2028! Tu voz también cuenta. Regístrate aquí: ' + window.location.origin + '/registro')
@@ -72,9 +68,6 @@ export default function Home() {
             <span className="text-primary-300 ml-1">San Cristóbal 2028</span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/resultados" className="hidden sm:block text-primary-200 hover:text-white text-sm font-medium transition-colors">
-              Estadísticas
-            </Link>
             <Link to="/login" className="text-primary-200 hover:text-white text-sm font-medium transition-colors">
               Acceder
             </Link>
@@ -170,101 +163,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PRIORIDADES */}
-      {stats?.prioridades && stats.prioridades.length > 0 && (
-        <section className="bg-primary-light py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <div className="text-primary-600 text-sm font-semibold uppercase tracking-widest mb-2">La voz del pueblo</div>
-              <h2 className="text-3xl font-black text-gray-900">Prioridades Ciudadanas</h2>
-              <p className="text-gray-500 mt-2">Lo que más le importa a San Cristóbal</p>
-            </div>
-
-            <div className="space-y-4">
-              {stats.prioridades.map((p, i) => {
-                const maxCount = stats.prioridades[0]?.count || 1
-                const pct = Math.round((p.count / maxCount) * 100)
-                return (
-                  <div key={p.nombre} className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg ${PRIORIDAD_COLORS[i] || 'bg-gray-400'}`}>
-                      {i + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <span className="font-semibold text-gray-800">{p.nombre}</span>
-                        <span className="text-sm font-bold text-primary-600">{p.count.toLocaleString('es-DO')} votos</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className={`h-full ${PRIORIDAD_COLORS[i] || 'bg-gray-400'} rounded-full`} style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* VOICES */}
-      {stats?.comentariosRecientes && stats.comentariosRecientes.length > 0 && (
-        <section className="bg-white py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <div className="text-primary-600 text-sm font-semibold uppercase tracking-widest mb-2">Comunidad habla</div>
-              <h2 className="text-3xl font-black text-gray-900">La Voz de la Gente</h2>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {stats.comentariosRecientes.slice(0, 6).map((c, i) => (
-                <div key={i} className="bg-primary-light border border-primary-100 rounded-2xl p-5">
-                  <MessageCircle size={20} className="text-primary-400 mb-3" />
-                  <p className="text-gray-700 italic text-sm leading-relaxed mb-3">"{c.problemaComunidad}"</p>
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <MapPin size={12} />
-                    <span>{c.sector || 'San Cristóbal'}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* SECTORS TABLE */}
-      {stats?.sectoresTop && stats.sectoresTop.length > 0 && (
-        <section className="bg-gray-50 py-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <div className="text-primary-600 text-sm font-semibold uppercase tracking-widest mb-2">Participación</div>
-              <h2 className="text-3xl font-black text-gray-900">Sectores con Más Participación</h2>
-            </div>
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-primary-700 text-white">
-                    <th className="text-left py-4 px-6 font-semibold text-sm">#</th>
-                    <th className="text-left py-4 px-6 font-semibold text-sm">Sector</th>
-                    <th className="text-right py-4 px-6 font-semibold text-sm">Ciudadanos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.sectoresTop.map((s, i) => (
-                    <tr key={s.sector} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="py-4 px-6 text-gray-400 font-bold">{i + 1}</td>
-                      <td className="py-4 px-6 font-semibold text-gray-800 flex items-center gap-2">
-                        <MapPin size={14} className="text-primary-400" />
-                        {s.sector}
-                      </td>
-                      <td className="py-4 px-6 text-right font-bold text-primary-600">{Number(s.count).toLocaleString('es-DO')}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* CTA SECTION */}
       <section className="bg-gradient-to-br from-primary-700 to-primary-900 text-white py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
@@ -295,7 +193,6 @@ export default function Home() {
         <div className="flex justify-center gap-6 mt-4 text-xs">
           <Link to="/" className="hover:text-white transition-colors">Inicio</Link>
           <Link to="/registro" className="hover:text-white transition-colors">Registro</Link>
-          <Link to="/resultados" className="hover:text-white transition-colors">Estadísticas</Link>
           <Link to="/login" className="hover:text-white transition-colors">Acceso</Link>
         </div>
       </footer>

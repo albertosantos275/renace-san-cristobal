@@ -1,11 +1,34 @@
 import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
-import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
+import { authenticate, requireAdmin, requirePromoterOrAdmin, AuthRequest } from '../middleware/auth'
 
 const router = Router()
 
-// Public stats
+// Public stats — ONLY the live counter + landing config. No detailed breakdowns.
+// (Detailed statistics are restricted to logged-in admin/promoters via /results.)
 router.get('/public', async (_req, res: Response) => {
+  try {
+    const total = await prisma.citizen.count()
+
+    const config = await prisma.config.findMany({
+      where: { clave: { in: ['meta_ciudadana', 'slogan', 'registro_publico_activo'] } }
+    })
+    const configMap = Object.fromEntries(config.map(c => [c.clave, c.valor]))
+
+    res.json({
+      total,
+      meta: parseInt(configMap['meta_ciudadana'] || '50000'),
+      slogan: configMap['slogan'] || 'Construyamos juntos el San Cristóbal que merecemos.',
+      registroPublicoActivo: configMap['registro_publico_activo'] !== 'false',
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Error al obtener estadísticas' })
+  }
+})
+
+// Detailed statistics for the "Estadísticas" page — restricted to logged-in admin/promoters.
+router.get('/results', authenticate, requirePromoterOrAdmin, async (_req, res: Response) => {
   try {
     const total = await prisma.citizen.count()
 

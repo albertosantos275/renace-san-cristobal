@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import {
   LayoutDashboard, Users, UserCheck, Heart,
-  BarChart3, Settings, LogOut, Menu, X, ChevronRight
+  BarChart3, TrendingUp, Settings, LogOut, Menu, X, ChevronRight
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/admin/promotores', label: 'Promotores', icon: UserCheck },
   { to: '/admin/voluntarios', label: 'Voluntarios', icon: Heart },
   { to: '/admin/reportes', label: 'Reportes', icon: BarChart3 },
+  { to: '/resultados', label: 'Estadísticas', icon: TrendingUp },
   { to: '/admin/configuracion', label: 'Configuración', icon: Settings },
 ]
 
