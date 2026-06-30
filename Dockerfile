@@ -22,6 +22,10 @@ FROM node:20-slim AS runtime
 RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 ENV NODE_ENV=production
+# Default DB location = the mounted Railway volume at /data. (Just a file path, not a
+# secret.) Can still be overridden by a DATABASE_URL service variable if needed.
+ENV DATABASE_URL=file:/data/prod.db
+RUN mkdir -p /data
 # Bring the fully-installed node_modules (includes Prisma client + CLI) from the build stage
 COPY --from=backend /app/node_modules ./node_modules
 COPY --from=backend /app/package.json ./package.json
