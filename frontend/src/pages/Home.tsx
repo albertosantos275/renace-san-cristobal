@@ -66,7 +66,7 @@ export default function Home() {
       {/* NAV */}
       <nav className="relative z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="font-black text-xl sm:text-2xl lg:text-3xl tracking-tight leading-tight">
+          <div className="font-black text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight">
             <span className="text-white">Renace</span>
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
@@ -93,17 +93,9 @@ export default function Home() {
                 </button>
               </>
             ) : (
-              <>
-                <Link to="/login" className="text-primary-100 hover:text-white text-sm font-medium transition-colors">
-                  Acceder
-                </Link>
-                <Link
-                  to="/registro"
-                  className="bg-white text-primary-700 hover:bg-primary-50 font-semibold text-sm px-4 py-2 rounded-lg transition-all"
-                >
-                  Regístrate
-                </Link>
-              </>
+              <Link to="/login" className="text-primary-100 hover:text-white text-sm font-medium transition-colors">
+                Acceder
+              </Link>
             )}
           </div>
         </div>
