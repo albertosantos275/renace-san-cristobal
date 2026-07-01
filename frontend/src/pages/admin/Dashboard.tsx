@@ -3,7 +3,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
-import { Users, TrendingUp, Heart, UserCheck, Target, Calendar, Award, MapPin } from 'lucide-react'
+import { Users, TrendingUp, Heart, UserCheck, Target, Calendar, Award, MapPin, BarChart3 } from 'lucide-react'
 import api from '../../lib/api'
 import { AdminStats, NIVEL_APOYO_LABELS, NivelApoyo } from '../../types'
 
@@ -29,6 +29,7 @@ function KPICard({ icon: Icon, label, value, sub, color = 'text-primary-600' }: 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState<'general' | 'promotores'>('general')
 
   useEffect(() => {
     api.get('/stats/admin').then(r => setStats(r.data)).catch(() => {}).finally(() => setLoading(false))
@@ -81,6 +82,24 @@ export default function AdminDashboard() {
         <p className="text-gray-500 text-sm mt-1">Renace San Cristóbal 2028 · Panel de Control</p>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl sm:inline-flex">
+        <button
+          onClick={() => setTab('general')}
+          className={`flex items-center justify-center gap-2 flex-1 sm:flex-none px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === 'general' ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          <BarChart3 size={16} />General
+        </button>
+        <button
+          onClick={() => setTab('promotores')}
+          className={`flex items-center justify-center gap-2 flex-1 sm:flex-none px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === 'promotores' ? 'bg-white text-primary-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          <Users size={16} />Por Promotor
+        </button>
+      </div>
+
+    {tab === 'general' && (
+      <div className="space-y-6">
       {/* Meta progress */}
       <div className="card bg-gradient-to-r from-primary-700 to-primary-600 text-white">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
@@ -158,7 +177,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Charts row 2 */}
+      {/* Charts row 2: sector + prioridades */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* By sector */}
         <div className="card">
@@ -178,38 +197,60 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Top promotores */}
+        {/* Prioridades */}
         <div className="card">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Top Promotores</h2>
-          {stats.topPromotores.length > 0 ? (
-            <div className="space-y-3">
-              {stats.topPromotores.slice(0, 8).map((p, i) => (
-                <div key={p.id} className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-                    i === 0 ? 'bg-yellow-400 text-yellow-900' :
-                    i === 1 ? 'bg-gray-300 text-gray-700' :
-                    i === 2 ? 'bg-amber-600 text-white' :
-                    'bg-primary-100 text-primary-700'
-                  }`}>
-                    {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-gray-800 truncate">{p.nombre}</div>
-                    <div className="h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
-                      <div
-                        className="h-full bg-primary-500 rounded-full"
-                        style={{ width: `${Math.round((Number(p.count) / Number(stats.topPromotores[0]?.count || 1)) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="text-sm font-bold text-primary-600 flex-shrink-0">{Number(p.count).toLocaleString('es-DO')}</div>
-                </div>
-              ))}
-            </div>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Prioridades Ciudadanas</h2>
+          {stats.prioridades.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={stats.prioridades.slice(0, 8).map(p => ({ name: p.nombre, value: p.count }))}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip formatter={(v) => [v, 'Votos']} />
+                <Bar dataKey="value" fill="#1638D6" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           ) : (
-            <div className="h-48 flex items-center justify-center text-gray-300 text-sm">Sin promotores registrados</div>
+            <div className="h-48 flex items-center justify-center text-gray-300 text-sm">Sin datos de prioridades</div>
           )}
         </div>
+      </div>
+      </div>
+    )}
+
+    {tab === 'promotores' && (
+      <div className="space-y-6">
+      {/* Top promotores */}
+      <div className="card">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Top Promotores</h2>
+        {stats.topPromotores.length > 0 ? (
+          <div className="space-y-3">
+            {stats.topPromotores.slice(0, 8).map((p, i) => (
+              <div key={p.id} className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${
+                  i === 0 ? 'bg-yellow-400 text-yellow-900' :
+                  i === 1 ? 'bg-gray-300 text-gray-700' :
+                  i === 2 ? 'bg-amber-600 text-white' :
+                  'bg-primary-100 text-primary-700'
+                }`}>
+                  {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-800 truncate">{p.nombre}</div>
+                  <div className="h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                    <div
+                      className="h-full bg-primary-500 rounded-full"
+                      style={{ width: `${Math.round((Number(p.count) / Number(stats.topPromotores[0]?.count || 1)) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="text-sm font-bold text-primary-600 flex-shrink-0">{Number(p.count).toLocaleString('es-DO')}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="h-48 flex items-center justify-center text-gray-300 text-sm">Sin promotores registrados</div>
+        )}
       </div>
 
       {/* Voluntarios por promotor */}
@@ -296,21 +337,8 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Prioridades */}
-      {stats.prioridades.length > 0 && (
-        <div className="card">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Prioridades Ciudadanas</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={stats.prioridades.slice(0, 8).map(p => ({ name: p.nombre, value: p.count }))}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip formatter={(v) => [v, 'Votos']} />
-              <Bar dataKey="value" fill="#1638D6" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      </div>
+    )}
     </div>
   )
 }
