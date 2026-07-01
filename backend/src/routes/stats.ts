@@ -229,6 +229,27 @@ router.get('/my-progress', authenticate, requirePromoterOrAdmin, async (req: Aut
   }
 })
 
+// Ranking de promotores — accesible a promotores y admin (a diferencia de /admin).
+router.get('/ranking', authenticate, requirePromoterOrAdmin, async (_req, res: Response) => {
+  try {
+    const promoterUsers = await prisma.user.findMany({
+      where: { rol: 'PROMOTER', activo: true },
+      select: { id: true, nombre: true }
+    })
+    const ranking = await Promise.all(
+      promoterUsers.map(async u => {
+        const count = await prisma.citizen.count({ where: { registradoPorId: u.id } })
+        return { id: u.id, nombre: u.nombre, count }
+      })
+    )
+    ranking.sort((a, b) => b.count - a.count)
+    res.json({ ranking })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Error al obtener ranking' })
+  }
+})
+
 // Sector intelligence
 router.get('/sector/:nombre', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {

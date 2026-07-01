@@ -33,10 +33,10 @@ export default function PromoterDashboard() {
         setProgress({ meta: progRes.data.meta || 0, dailyGrowth: progRes.data.dailyGrowth || [] })
       } catch {}
 
-      // Ranking general (endpoint solo-admin) — opcional, se ignora si no hay acceso
+      // Ranking general (accesible a promotores)
       try {
-        const allRes = await api.get('/stats/admin')
-        const top = allRes.data.topPromotores || []
+        const rankRes = await api.get('/stats/ranking')
+        const top = rankRes.data.ranking || []
         setRanking(top)
         const rank = top.findIndex((p: any) => p.id === user?.id)
         setMyRank(rank >= 0 ? rank + 1 : null)

@@ -13,8 +13,8 @@ export default function PromoterRanking() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/stats/admin').then(r => {
-      setRanking(r.data.topPromotores || [])
+    api.get('/stats/ranking').then(r => {
+      setRanking(r.data.ranking || [])
     }).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
