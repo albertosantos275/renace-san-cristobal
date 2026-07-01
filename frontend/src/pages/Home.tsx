@@ -74,10 +74,15 @@ export default function Home() {
           {/* Left spacer balances the right icon so the title stays centered
               and never overlaps the access icon on small screens */}
           <div className="w-9 shrink-0" aria-hidden="true" />
-          {/* Centered with the poster; fixed size — does NOT change across breakpoints */}
-          <div className="font-black text-4xl tracking-tight leading-tight text-center flex-1 min-w-0">
-            <span className="text-white">Renace</span>
-            <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
+          {/* Centered over the poster, themed to match its colors.
+              On phones only "2028" wraps to a new line — "Renace San Cristóbal"
+              stays together via whitespace-nowrap. */}
+          <div className="flex-1 min-w-0 text-center font-black tracking-tight leading-tight text-2xl sm:text-3xl lg:text-4xl [text-shadow:0_2px_10px_rgba(3,10,40,0.45)]">
+            <span className="whitespace-nowrap">
+              <span className="text-white">Renace</span>
+              <span className="text-primary-200"> San Cristóbal</span>
+            </span>{' '}
+            <span className="text-primary-200 whitespace-nowrap">2028</span>
           </div>
           <div className="shrink-0 flex items-center gap-2">
             {user ? (
@@ -127,7 +132,7 @@ export default function Home() {
           <img
             src="/afiche.jpg"
             alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
-            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[72vh] w-auto lg:max-h-[84vh] lg:w-auto"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[78vh] w-auto lg:max-h-[84vh] lg:w-auto"
           />
         </Link>
 
