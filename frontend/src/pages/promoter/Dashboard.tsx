@@ -73,10 +73,10 @@ export default function PromoterDashboard() {
 
       {/* My stats (compact — deja espacio para la gráfica sin scroll) */}
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+        <Link to="/promotor/mis-ciudadanos" className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center hover:shadow-md transition-all">
           <div className="text-xl sm:text-2xl font-black text-primary-700 leading-none">{loading ? '—' : stats.total}</div>
           <div className="text-[11px] text-gray-500 mt-1 font-medium leading-tight">Mis Registros</div>
-        </div>
+        </Link>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
           <div className="text-xl sm:text-2xl font-black text-green-600 leading-none">{loading ? '—' : stats.hoy}</div>
           <div className="text-[11px] text-gray-500 mt-1 font-medium leading-tight">Hoy</div>
