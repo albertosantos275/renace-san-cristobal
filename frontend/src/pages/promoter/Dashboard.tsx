@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useAuth } from '../../hooks/useAuth'
-import { UserPlus, Users, TrendingUp, Star, ArrowRight, Target } from 'lucide-react'
+import { UserPlus, TrendingUp, Target } from 'lucide-react'
 import api from '../../lib/api'
 
 export default function PromoterDashboard() {
   const { user } = useAuth()
   const [stats, setStats] = useState({ total: 0, hoy: 0, semana: 0, voluntarios: 0 })
   const [progress, setProgress] = useState<{ meta: number; dailyGrowth: { date: string; count: number }[] }>({ meta: 0, dailyGrowth: [] })
-  const [ranking, setRanking] = useState<{ id: number; nombre: string; count: number }[]>([])
   const [myRank, setMyRank] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -37,7 +36,6 @@ export default function PromoterDashboard() {
       try {
         const rankRes = await api.get('/stats/ranking')
         const top = rankRes.data.ranking || []
-        setRanking(top)
         const rank = top.findIndex((p: any) => p.id === user?.id)
         setMyRank(rank >= 0 ? rank + 1 : null)
       } catch {}
@@ -60,38 +58,36 @@ export default function PromoterDashboard() {
       {/* Quick action */}
       <Link
         to="/promotor/registro"
-        className="block bg-gradient-to-r from-primary-700 to-primary-600 text-white rounded-2xl p-6 hover:shadow-lg transition-all group"
+        className="block bg-gradient-to-r from-primary-700 to-primary-600 text-white rounded-2xl p-4 hover:shadow-lg transition-all group"
       >
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-primary-100 text-sm font-medium mb-1">Acción rápida</div>
-            <div className="text-2xl font-black">Registrar Nuevo Ciudadano</div>
-            <div className="text-primary-200 text-sm mt-1">Toca para registrar ahora</div>
+            <div className="text-primary-100 text-xs font-medium mb-0.5">Acción rápida</div>
+            <div className="text-xl font-black">Registrar Nuevo Ciudadano</div>
           </div>
-          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-            <UserPlus size={28} />
+          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <UserPlus size={24} />
           </div>
         </div>
       </Link>
 
-      {/* My stats */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="card text-center">
-          <div className="text-4xl font-black text-primary-700">{loading ? '—' : stats.total}</div>
-          <div className="text-sm text-gray-500 mt-1 font-medium">Mis Registros Totales</div>
+      {/* My stats (compact — deja espacio para la gráfica sin scroll) */}
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+          <div className="text-xl sm:text-2xl font-black text-primary-700 leading-none">{loading ? '—' : stats.total}</div>
+          <div className="text-[11px] text-gray-500 mt-1 font-medium leading-tight">Mis Registros</div>
         </div>
-        <div className="card text-center">
-          <div className="text-4xl font-black text-green-600">{loading ? '—' : stats.hoy}</div>
-          <div className="text-sm text-gray-500 mt-1 font-medium">Registros Hoy</div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+          <div className="text-xl sm:text-2xl font-black text-green-600 leading-none">{loading ? '—' : stats.hoy}</div>
+          <div className="text-[11px] text-gray-500 mt-1 font-medium leading-tight">Hoy</div>
         </div>
-        <div className="card text-center">
-          <div className="text-4xl font-black text-primary-500">{loading ? '—' : stats.semana}</div>
-          <div className="text-sm text-gray-500 mt-1 font-medium">Esta Semana</div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+          <div className="text-xl sm:text-2xl font-black text-primary-500 leading-none">{loading ? '—' : stats.semana}</div>
+          <div className="text-[11px] text-gray-500 mt-1 font-medium leading-tight">Semana</div>
         </div>
-        <Link to="/promotor/mis-ciudadanos?voluntario=true" className="card text-center hover:shadow-md transition-all">
-          <div className="text-4xl font-black text-purple-600">{loading ? '—' : stats.voluntarios}</div>
-          <div className="text-sm text-gray-500 mt-1 font-medium">Voluntarios</div>
-          <div className="text-xs text-primary-500 mt-0.5">Ver lista →</div>
+        <Link to="/promotor/mis-ciudadanos?voluntario=true" className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center hover:shadow-md transition-all">
+          <div className="text-xl sm:text-2xl font-black text-purple-600 leading-none">{loading ? '—' : stats.voluntarios}</div>
+          <div className="text-[11px] text-gray-500 mt-1 font-medium leading-tight">Voluntarios</div>
         </Link>
       </div>
 
@@ -155,45 +151,6 @@ export default function PromoterDashboard() {
         </div>
       )}
 
-      {/* Mini ranking */}
-      {ranking.length > 0 && (
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-gray-900 flex items-center gap-2"><Star size={18} className="text-yellow-500" />Ranking General</h2>
-            <Link to="/promotor/ranking" className="text-sm text-primary-600 font-medium hover:text-primary-700 flex items-center gap-1">
-              Ver todo <ArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {ranking.slice(0, 5).map((p, i) => (
-              <div key={p.id} className={`flex items-center gap-3 p-2.5 rounded-xl ${p.id === user?.id ? 'bg-primary-50 border border-primary-100' : ''}`}>
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-                  i === 0 ? 'bg-yellow-400 text-yellow-900' : i === 1 ? 'bg-gray-200 text-gray-700' : i === 2 ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-500'
-                }`}>
-                  {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
-                </div>
-                <div className="flex-1 font-medium text-gray-800 text-sm">
-                  {p.nombre}
-                  {p.id === user?.id && <span className="ml-2 text-xs text-primary-600 font-bold">← Tú</span>}
-                </div>
-                <div className="font-bold text-primary-700">{Number(p.count)}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Quick links */}
-      <div className="grid grid-cols-2 gap-3">
-        <Link to="/promotor/mis-ciudadanos" className="card hover:shadow-md transition-all flex items-center gap-3 p-4">
-          <Users size={22} className="text-primary-600" />
-          <div className="text-sm font-semibold text-gray-700">Mis Ciudadanos</div>
-        </Link>
-        <Link to="/promotor/ranking" className="card hover:shadow-md transition-all flex items-center gap-3 p-4">
-          <TrendingUp size={22} className="text-primary-600" />
-          <div className="text-sm font-semibold text-gray-700">Ver Ranking</div>
-        </Link>
-      </div>
     </div>
   )
 }
