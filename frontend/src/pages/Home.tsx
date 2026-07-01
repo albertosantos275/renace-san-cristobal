@@ -71,7 +71,7 @@ export default function Home() {
       {/* NAV */}
       <nav className="relative z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="font-black text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight">
+          <div className="font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight">
             <span className="text-white">Renace</span>
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
@@ -113,12 +113,12 @@ export default function Home() {
         <Link
           to="/registro"
           title="¡Inscríbete!"
-          className="block shrink-0 w-full max-w-[94vw] sm:max-w-sm lg:max-w-md"
+          className="block shrink-0 w-full max-w-[98vw] sm:max-w-md lg:max-w-xl"
         >
           <img
             src="/afiche.jpg"
             alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
-            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[62vh] w-auto lg:max-h-none lg:w-full"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[78vh] w-auto lg:max-h-none lg:w-full"
           />
         </Link>
 
