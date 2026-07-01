@@ -115,18 +115,18 @@ export default function Home() {
       </nav>
 
       {/* MAIN — poster + counter + share (fits mobile without scroll) */}
-      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-12 max-w-6xl mx-auto px-4 py-3 lg:py-6 w-full">
+      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-4 lg:gap-12 max-w-6xl mx-auto px-4 pt-1 pb-4 lg:py-6 w-full">
 
-        {/* POSTER (clickable → register) — height-capped on mobile */}
+        {/* POSTER (clickable → register) — larger on mobile, close to the nav */}
         <Link
           to="/registro"
           title="¡Inscríbete!"
-          className="block shrink-0 w-full max-w-[68vw] sm:max-w-xs lg:max-w-sm"
+          className="block shrink-0 w-full max-w-[88vw] sm:max-w-xs lg:max-w-sm"
         >
           <img
             src="/afiche.jpg"
             alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
-            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[40vh] w-auto lg:max-h-none lg:w-full"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[52vh] w-auto lg:max-h-none lg:w-full"
           />
         </Link>
 
