@@ -84,7 +84,11 @@ export interface AdminStats {
   dailyGrowth: { date: string; count: number }[]
   porSector: { sector: string; count: number }[]
   porNivel: { nivelApoyo: string; count: number }[]
-  topPromotores: { id: number; nombre: string; count: number; voluntarios: number }[]
+  topPromotores: { id: number; nombre: string; count: number; voluntarios: number; meta: number }[]
+  promoterProgress: {
+    id: number; nombre: string; meta: number; total: number
+    dias: { date: string; count: number }[]
+  }[]
   prioridades: { nombre: string; count: number }[]
 }
 

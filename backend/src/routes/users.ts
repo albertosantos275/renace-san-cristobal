@@ -16,7 +16,7 @@ function serializeSectores(value: unknown): string {
 router.get('/', authenticate, requireAdmin, async (_req, res: Response) => {
   try {
     const users = await prisma.user.findMany({
-      select: { id: true, nombre: true, email: true, rol: true, sectores: true, activo: true, createdAt: true },
+      select: { id: true, nombre: true, email: true, rol: true, sectores: true, metaCiudadanos: true, activo: true, createdAt: true },
       orderBy: { nombre: 'asc' }
     })
 
@@ -41,14 +41,18 @@ router.get('/', authenticate, requireAdmin, async (_req, res: Response) => {
 
 router.post('/', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
-    const { nombre, email, password, rol, sectores } = req.body
+    const { nombre, email, password, rol, sectores, metaCiudadanos } = req.body
     if (!nombre || !email || !password) {
       return res.status(400).json({ error: 'Nombre, email y contraseña requeridos' })
     }
     const passwordHash = await bcrypt.hash(password, 10)
     const user = await prisma.user.create({
-      data: { nombre, email: email.toLowerCase().trim(), passwordHash, rol: rol || 'PROMOTER', sectores: serializeSectores(sectores) },
-      select: { id: true, nombre: true, email: true, rol: true, sectores: true, createdAt: true }
+      data: {
+        nombre, email: email.toLowerCase().trim(), passwordHash,
+        rol: rol || 'PROMOTER', sectores: serializeSectores(sectores),
+        metaCiudadanos: Number.isFinite(Number(metaCiudadanos)) ? Math.max(0, Math.trunc(Number(metaCiudadanos))) : 0,
+      },
+      select: { id: true, nombre: true, email: true, rol: true, sectores: true, metaCiudadanos: true, createdAt: true }
     })
     res.status(201).json({ ...user, sectores: parseSectores(user.sectores) })
   } catch (err: any) {
@@ -59,16 +63,17 @@ router.post('/', authenticate, requireAdmin, async (req: AuthRequest, res: Respo
 
 router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
-    const { nombre, email, password, rol, sectores, activo } = req.body
+    const { nombre, email, password, rol, sectores, activo, metaCiudadanos } = req.body
     const data: any = { nombre, rol, activo }
     if (email) data.email = email.toLowerCase().trim()
     if (password) data.passwordHash = await bcrypt.hash(password, 10)
     if (sectores !== undefined) data.sectores = serializeSectores(sectores)
+    if (metaCiudadanos !== undefined) data.metaCiudadanos = Number.isFinite(Number(metaCiudadanos)) ? Math.max(0, Math.trunc(Number(metaCiudadanos))) : 0
 
     const user = await prisma.user.update({
       where: { id: parseInt(req.params.id) },
       data,
-      select: { id: true, nombre: true, email: true, rol: true, sectores: true, activo: true }
+      select: { id: true, nombre: true, email: true, rol: true, sectores: true, metaCiudadanos: true, activo: true }
     })
     res.json({ ...user, sectores: parseSectores(user.sectores) })
   } catch {

@@ -100,16 +100,21 @@ router.get('/admin', authenticate, requireAdmin, async (_req, res: Response) => 
       prisma.user.count({ where: { rol: 'PROMOTER', activo: true } }),
     ])
 
-    // Daily growth: fetch recent citizens and group by date in JS
+    // Daily growth: fetch recent citizens (last 30 days) and group by date in JS.
+    // Also keep registradoPorId to build per-promoter daily progress.
     const recentCitizens = await prisma.citizen.findMany({
       where: { createdAt: { gte: month } },
-      select: { createdAt: true },
+      select: { createdAt: true, registradoPorId: true },
       orderBy: { createdAt: 'asc' }
     })
     const dailyMap: Record<string, number> = {}
+    const dailyByPromoter: Record<number, Record<string, number>> = {}
     recentCitizens.forEach(c => {
       const date = c.createdAt.toISOString().slice(0, 10)
       dailyMap[date] = (dailyMap[date] || 0) + 1
+      if (c.registradoPorId) {
+        (dailyByPromoter[c.registradoPorId] ||= {})[date] = (dailyByPromoter[c.registradoPorId]?.[date] || 0) + 1
+      }
     })
     const dailyGrowth = Object.entries(dailyMap).map(([date, count]) => ({ date, count }))
 
@@ -130,10 +135,10 @@ router.get('/admin', authenticate, requireAdmin, async (_req, res: Response) => 
     })
     const porNivel = nivelGroups.map(n => ({ nivelApoyo: n.nivelApoyo, count: n._count.id }))
 
-    // Top promotores
+    // Top promotores (con su meta individual)
     const promoterUsers = await prisma.user.findMany({
       where: { rol: 'PROMOTER' },
-      select: { id: true, nombre: true }
+      select: { id: true, nombre: true, metaCiudadanos: true, activo: true }
     })
     const topPromotores = await Promise.all(
       promoterUsers.map(async u => {
@@ -141,10 +146,22 @@ router.get('/admin', authenticate, requireAdmin, async (_req, res: Response) => 
           prisma.citizen.count({ where: { registradoPorId: u.id } }),
           prisma.citizen.count({ where: { registradoPorId: u.id, voluntario: true } }),
         ])
-        return { id: u.id, nombre: u.nombre, count, voluntarios }
+        return { id: u.id, nombre: u.nombre, count, voluntarios, meta: u.metaCiudadanos }
       })
     )
     topPromotores.sort((a, b) => b.count - a.count)
+
+    // Progreso diario por promotor (últimos 30 días) para el gráfico de metas.
+    const promoterProgress = promoterUsers
+      .filter(u => u.activo)
+      .map(u => {
+        const dias = Object.entries(dailyByPromoter[u.id] || {})
+          .map(([date, count]) => ({ date, count }))
+          .sort((a, b) => a.date.localeCompare(b.date))
+        const total = topPromotores.find(p => p.id === u.id)?.count ?? 0
+        return { id: u.id, nombre: u.nombre, meta: u.metaCiudadanos, total, dias }
+      })
+      .sort((a, b) => b.total - a.total)
 
     // Prioridades
     const allCitizens = await prisma.citizen.findMany({ select: { prioridades: true } })
@@ -169,11 +186,46 @@ router.get('/admin', authenticate, requireAdmin, async (_req, res: Response) => 
       porSector,
       porNivel,
       topPromotores,
+      promoterProgress,
       prioridades
     })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Error al obtener estadísticas admin' })
+  }
+})
+
+// Progreso del promotor autenticado: su meta, total y crecimiento diario (30 días).
+router.get('/my-progress', authenticate, requirePromoterOrAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const uid = req.user!.id
+    const month = new Date(); month.setDate(month.getDate() - 30)
+    const today = new Date(); today.setHours(0, 0, 0, 0)
+    const week = new Date(); week.setDate(week.getDate() - 7)
+
+    const [user, total, recent] = await Promise.all([
+      prisma.user.findUnique({ where: { id: uid }, select: { metaCiudadanos: true } }),
+      prisma.citizen.count({ where: { registradoPorId: uid } }),
+      prisma.citizen.findMany({
+        where: { registradoPorId: uid, createdAt: { gte: month } },
+        select: { createdAt: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ])
+
+    const dailyMap: Record<string, number> = {}
+    recent.forEach(c => {
+      const date = c.createdAt.toISOString().slice(0, 10)
+      dailyMap[date] = (dailyMap[date] || 0) + 1
+    })
+    const dailyGrowth = Object.entries(dailyMap).map(([date, count]) => ({ date, count }))
+    const hoy = recent.filter(c => c.createdAt >= today).length
+    const semana = recent.filter(c => c.createdAt >= week).length
+
+    res.json({ meta: user?.metaCiudadanos ?? 0, total, hoy, semana, dailyGrowth })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Error al obtener progreso' })
   }
 })
 

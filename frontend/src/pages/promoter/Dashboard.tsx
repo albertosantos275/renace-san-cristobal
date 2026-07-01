@@ -1,49 +1,54 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useAuth } from '../../hooks/useAuth'
-import { UserPlus, Users, TrendingUp, Star, ArrowRight } from 'lucide-react'
+import { UserPlus, Users, TrendingUp, Star, ArrowRight, Target } from 'lucide-react'
 import api from '../../lib/api'
 
 export default function PromoterDashboard() {
   const { user } = useAuth()
   const [stats, setStats] = useState({ total: 0, hoy: 0, semana: 0, voluntarios: 0 })
+  const [progress, setProgress] = useState<{ meta: number; dailyGrowth: { date: string; count: number }[] }>({ meta: 0, dailyGrowth: [] })
   const [ranking, setRanking] = useState<{ id: number; nombre: string; count: number }[]>([])
   const [myRank, setMyRank] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
+      // Stats propias + meta y progreso diario (endpoints accesibles al promotor)
       try {
-        const [myRes, allRes] = await Promise.all([
+        const [myRes, hoyRes, semanaRes, volRes, progRes] = await Promise.all([
           api.get('/citizens', { params: { limit: 1 } }),
-          api.get('/stats/admin'),
-        ])
-
-        const today = new Date(); today.setHours(0,0,0,0)
-        const week = new Date(); week.setDate(week.getDate() - 7)
-
-        const [hoyRes, semanaRes, volRes] = await Promise.all([
           api.get('/citizens', { params: { periodo: 'hoy', limit: 1 } }),
           api.get('/citizens', { params: { periodo: 'semana', limit: 1 } }),
           api.get('/citizens', { params: { voluntario: 'true', limit: 1 } }),
+          api.get('/stats/my-progress'),
         ])
-
         setStats({
           total: myRes.data.total,
           hoy: hoyRes.data.total,
           semana: semanaRes.data.total,
           voluntarios: volRes.data.total,
         })
+        setProgress({ meta: progRes.data.meta || 0, dailyGrowth: progRes.data.dailyGrowth || [] })
+      } catch {}
 
+      // Ranking general (endpoint solo-admin) — opcional, se ignora si no hay acceso
+      try {
+        const allRes = await api.get('/stats/admin')
         const top = allRes.data.topPromotores || []
         setRanking(top)
         const rank = top.findIndex((p: any) => p.id === user?.id)
         setMyRank(rank >= 0 ? rank + 1 : null)
       } catch {}
+
       setLoading(false)
     }
     fetchData()
   }, [user?.id])
+
+  const metaPct = progress.meta > 0 ? Math.min(Math.round((stats.total / progress.meta) * 100), 100) : 0
+  const restan = Math.max(progress.meta - stats.total, 0)
 
   return (
     <div className="space-y-6">
@@ -88,6 +93,51 @@ export default function PromoterDashboard() {
           <div className="text-sm text-gray-500 mt-1 font-medium">Voluntarios</div>
           <div className="text-xs text-primary-500 mt-0.5">Ver lista →</div>
         </Link>
+      </div>
+
+      {/* Mi meta */}
+      {progress.meta > 0 && (
+        <div className="card">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+              <Target size={18} className="text-primary-600" />Mi Meta de Ciudadanos
+            </h2>
+            <span className="text-sm font-bold text-gray-700">{stats.total.toLocaleString('es-DO')} / {progress.meta.toLocaleString('es-DO')}</span>
+          </div>
+          <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-primary-600 rounded-full transition-all duration-1000" style={{ width: `${metaPct}%` }} />
+          </div>
+          <div className="text-xs text-gray-500 mt-1.5">
+            <span className="font-bold text-primary-600">{metaPct}%</span> completado
+            {restan > 0 ? ` · te faltan ${restan.toLocaleString('es-DO')}` : ' · ¡meta alcanzada! 🎉'}
+          </div>
+        </div>
+      )}
+
+      {/* Mi progreso por día */}
+      <div className="card">
+        <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <TrendingUp size={18} className="text-primary-600" />Mi Progreso por Día (últimos 30 días)
+        </h2>
+        {progress.dailyGrowth.length > 0 ? (
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={progress.dailyGrowth}>
+              <defs>
+                <linearGradient id="myAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#1638D6" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#1638D6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={d => d.slice(5)} />
+              <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+              <Tooltip labelFormatter={d => `Fecha: ${d}`} formatter={(v) => [v, 'Registros']} />
+              <Area type="monotone" dataKey="count" stroke="#1638D6" strokeWidth={2} fill="url(#myAreaGrad)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-40 flex items-center justify-center text-gray-300 text-sm">Aún no has registrado ciudadanos</div>
+        )}
       </div>
 
       {/* My rank */}

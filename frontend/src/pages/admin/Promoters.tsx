@@ -6,6 +6,7 @@ import PromoterDetailModal from '../../components/PromoterDetailModal'
 
 interface PromoterUser {
   id: number; nombre: string; email: string; rol: string; sectores?: string[]
+  metaCiudadanos: number
   activo: boolean; totalRegistros: number; registrosHoy: number; registrosSemana: number
   ultimoRegistro?: string; createdAt: string
 }
@@ -15,7 +16,7 @@ export default function AdminPromoters() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [sectors, setSectors] = useState<string[]>([])
-  const [form, setForm] = useState({ nombre: '', email: '', password: '', sectores: [] as string[], rol: 'PROMOTER' })
+  const [form, setForm] = useState({ nombre: '', email: '', password: '', sectores: [] as string[], rol: 'PROMOTER', metaCiudadanos: '' })
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState('')
   const [detailId, setDetailId] = useState<number | null>(null)
@@ -35,7 +36,7 @@ export default function AdminPromoters() {
     try {
       await api.post('/users', form)
       setShowForm(false)
-      setForm({ nombre: '', email: '', password: '', sectores: [], rol: 'PROMOTER' })
+      setForm({ nombre: '', email: '', password: '', sectores: [], rol: 'PROMOTER', metaCiudadanos: '' })
       loadPromoters()
     } catch (e: any) { setError(e.response?.data?.error || 'Error al crear usuario') }
     setCreating(false)
@@ -43,6 +44,11 @@ export default function AdminPromoters() {
 
   const handleToggle = async (id: number, activo: boolean) => {
     try { await api.put(`/users/${id}`, { activo: !activo }); loadPromoters() } catch {}
+  }
+
+  const handleSetMeta = async (id: number, value: string) => {
+    const meta = Math.max(0, parseInt(value) || 0)
+    try { await api.put(`/users/${id}`, { metaCiudadanos: meta }); loadPromoters() } catch {}
   }
 
   const downloadCSV = async () => {
@@ -125,6 +131,17 @@ export default function AdminPromoters() {
                   <option value="ADMIN">Administrador</option>
                 </select>
               </div>
+              <div>
+                <label className="label">Meta de ciudadanos <span className="text-xs text-gray-400 font-normal">(opcional)</span></label>
+                <input
+                  type="number" min="0"
+                  value={form.metaCiudadanos}
+                  onChange={e => setForm({...form, metaCiudadanos: e.target.value})}
+                  className="input-field"
+                  placeholder="Ej: 500"
+                />
+                <p className="text-xs text-gray-400 mt-1">Cuántos ciudadanos esperas que registre este promotor.</p>
+              </div>
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowForm(false)} className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50">Cancelar</button>
@@ -153,6 +170,7 @@ export default function AdminPromoters() {
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Promotor</th>
                   <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                  <th className="text-center py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Meta</th>
                   <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Hoy</th>
                   <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Semana</th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden xl:table-cell">Último Registro</th>
@@ -170,7 +188,24 @@ export default function AdminPromoters() {
                       <div className="text-xs text-gray-400">{p.email}</div>
                       {p.sectores && p.sectores.length > 0 && <div className="text-xs text-primary-500 mt-0.5">📍 {p.sectores.join(', ')}</div>}
                     </td>
-                    <td className="py-3 px-4 text-right font-black text-primary-700 text-lg">{p.totalRegistros}</td>
+                    <td className="py-3 px-4 text-right font-black text-primary-700 text-lg">
+                      {p.totalRegistros}
+                      {p.metaCiudadanos > 0 && (
+                        <div className="text-[10px] font-semibold text-gray-400">
+                          {Math.min(Math.round((p.totalRegistros / p.metaCiudadanos) * 100), 100)}% de meta
+                        </div>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
+                      <input
+                        type="number" min="0"
+                        defaultValue={p.metaCiudadanos || 0}
+                        onBlur={e => handleSetMeta(p.id, e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
+                        className="w-20 border border-gray-200 rounded-lg px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        title="Meta de ciudadanos — edita y presiona Enter"
+                      />
+                    </td>
                     <td className="py-3 px-4 text-right font-semibold text-green-600 hidden md:table-cell">{p.registrosHoy}</td>
                     <td className="py-3 px-4 text-right text-gray-600 hidden lg:table-cell">{p.registrosSemana}</td>
                     <td className="py-3 px-4 text-gray-400 text-xs hidden xl:table-cell">

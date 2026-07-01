@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
-  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
 import { Users, TrendingUp, Heart, UserCheck, Target, Calendar, Award, MapPin } from 'lucide-react'
@@ -57,6 +57,21 @@ export default function AdminDashboard() {
     fullName: s.sector,
     value: Number(s.count)
   }))
+
+  // Avance de meta por promotor (todo el histórico) + líneas de progreso diario
+  const LINE_COLORS = ['#1638D6', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6']
+  const metaPromotores = stats.topPromotores
+    .filter(p => Number(p.meta) > 0)
+    .map(p => ({ ...p, pct: Math.min(Math.round((Number(p.count) / Number(p.meta)) * 100), 100) }))
+    .sort((a, b) => b.pct - a.pct)
+
+  const topProgress = [...(stats.promoterProgress || [])].sort((a, b) => b.total - a.total).slice(0, 5)
+  const progressDates = Array.from(new Set(topProgress.flatMap(p => p.dias.map(d => d.date)))).sort()
+  const progressChart = progressDates.map(date => {
+    const row: Record<string, any> = { date }
+    topProgress.forEach(p => { row[p.nombre] = p.dias.find(d => d.date === date)?.count || 0 })
+    return row
+  })
 
   return (
     <div className="space-y-6">
@@ -228,6 +243,57 @@ export default function AdminDashboard() {
             <div className="h-24 flex items-center justify-center text-gray-300 text-sm">Aún no hay voluntarios registrados</div>
           )
         })()}
+      </div>
+
+      {/* Avance de meta por promotor */}
+      {metaPromotores.length > 0 && (
+        <div className="card">
+          <div className="flex items-center gap-2 mb-4">
+            <Target size={18} className="text-primary-600" />
+            <h2 className="text-lg font-bold text-gray-900">Avance de Meta por Promotor</h2>
+          </div>
+          <div className="space-y-4">
+            {metaPromotores.slice(0, 10).map(p => (
+              <div key={p.id}>
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span className="font-semibold text-gray-800 truncate">{p.nombre}</span>
+                  <span className="text-gray-500 flex-shrink-0 ml-2">
+                    {Number(p.count).toLocaleString('es-DO')} / {Number(p.meta).toLocaleString('es-DO')} ·{' '}
+                    <span className={`font-bold ${p.pct >= 100 ? 'text-green-600' : 'text-primary-600'}`}>{p.pct}%</span>
+                  </span>
+                </div>
+                <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full transition-all duration-700 ${p.pct >= 100 ? 'bg-green-500' : 'bg-primary-500'}`} style={{ width: `${p.pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Progreso diario por promotor */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <TrendingUp size={18} className="text-primary-600" />
+          <h2 className="text-lg font-bold text-gray-900">Registros por Día por Promotor (30 días)</h2>
+          <span className="ml-auto text-xs text-gray-400">Top 5 promotores</span>
+        </div>
+        {progressChart.length > 0 && topProgress.length > 0 ? (
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={progressChart}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={d => d.slice(5)} />
+              <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+              <Tooltip labelFormatter={d => `Fecha: ${d}`} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              {topProgress.map((p, i) => (
+                <Line key={p.id} type="monotone" dataKey={p.nombre} stroke={LINE_COLORS[i % LINE_COLORS.length]} strokeWidth={2} dot={false} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-40 flex items-center justify-center text-gray-300 text-sm">Sin actividad reciente de promotores</div>
+        )}
       </div>
 
       {/* Prioridades */}
