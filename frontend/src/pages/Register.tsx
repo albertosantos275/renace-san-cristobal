@@ -99,7 +99,7 @@ export default function Register() {
 
           <button type="submit" disabled={submitting}
             className="w-full btn-primary text-lg py-4 rounded-2xl font-bold shadow-xl">
-            {submitting ? 'Registrando...' : '¡UNIRME AL CENSO CIUDADANO!'}
+            {submitting ? 'Registrando...' : '¡UNIRME!'}
           </button>
         </form>
 
