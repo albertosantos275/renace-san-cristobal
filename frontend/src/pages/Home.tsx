@@ -114,43 +114,43 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* MAIN — poster + counter + share */}
-      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 max-w-6xl mx-auto px-4 py-6 w-full">
+      {/* MAIN — poster + counter + share (fits mobile without scroll) */}
+      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-12 max-w-6xl mx-auto px-4 py-3 lg:py-6 w-full">
 
-        {/* POSTER (clickable → register) */}
+        {/* POSTER (clickable → register) — height-capped on mobile */}
         <Link
           to="/registro"
           title="¡Inscríbete!"
-          className="block w-full max-w-xs sm:max-w-sm shrink-0"
+          className="block shrink-0 w-full max-w-[68vw] sm:max-w-xs lg:max-w-sm"
         >
           <img
             src="/afiche.jpg"
             alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
-            className="w-full rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02]"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[40vh] w-auto lg:max-h-none lg:w-full"
           />
         </Link>
 
         {/* COUNTER + SHARE */}
         <div className="w-full max-w-md text-center lg:text-left">
           {/* Live counter */}
-          <div className="flex items-center gap-2 justify-center lg:justify-start text-primary-100 text-xs font-semibold uppercase tracking-widest mb-1">
+          <div className="flex items-center gap-2 justify-center lg:justify-start text-primary-100 text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-0.5">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
             En tiempo real
           </div>
-          <div className="text-6xl sm:text-7xl font-black leading-none">
+          <div className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none">
             {loading ? <span className="text-white/30">---</span> : <AnimatedCounter target={total} />}
           </div>
-          <p className="text-sm font-bold text-primary-200 uppercase tracking-widest mt-1 mb-4">
+          <p className="text-xs sm:text-sm font-bold text-primary-200 uppercase tracking-widest mt-0.5 mb-3">
             Ciudadanos Registrados
           </p>
 
           {/* Progress */}
-          <div className="mb-7 max-w-md mx-auto lg:mx-0">
-            <div className="flex justify-between text-xs text-primary-100 mb-1.5">
+          <div className="mb-5 max-w-md mx-auto lg:mx-0">
+            <div className="flex justify-between text-[11px] sm:text-xs text-primary-100 mb-1">
               <span>Meta: {meta.toLocaleString('es-DO')}</span>
               <span className="font-bold text-yellow-300">{pct}% completado</span>
             </div>
-            <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
               <div
                 className="h-full bg-yellow-300 rounded-full transition-all duration-1000"
                 style={{ width: `${pct}%` }}
@@ -158,28 +158,28 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Ayúdanos a crecer — share + follow */}
+          {/* Ayúdanos a crecer — compact share + follow */}
           <div className="max-w-md mx-auto lg:mx-0">
-            <div className="flex items-center gap-3 text-primary-200 text-xs font-semibold uppercase tracking-wider mb-3">
+            <div className="flex items-center gap-3 text-primary-200 text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-2">
               <div className="flex-1 h-px bg-white/20" />
               Ayúdanos a crecer
               <div className="flex-1 h-px bg-white/20" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 onClick={whatsappShare}
-                className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold px-4 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02]"
+                className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1ebe57] text-white text-sm font-semibold px-3 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02]"
               >
-                <Share2 size={18} />
+                <Share2 size={16} />
                 Compartir
               </button>
               <a
                 href="https://www.instagram.com/oliver_santos2424"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-semibold px-4 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02]"
+                className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white text-sm font-semibold px-3 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02]"
               >
-                <Instagram size={18} />
+                <Instagram size={16} />
                 Seguir
               </a>
             </div>
