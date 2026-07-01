@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { LogOut, LogIn } from 'lucide-react'
 import api from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
@@ -59,6 +59,9 @@ export default function Home() {
   const total = stats?.total ?? 0
   const pct = Math.min(Math.round((total / meta) * 100), 100)
   const mostrarContador = total >= THRESHOLD_MOSTRAR_CONTADOR
+
+  // Un admin/promotor logueado no ve el afiche público: va directo a su panel.
+  if (user) return <Navigate to={isAdmin ? '/admin' : '/promotor'} replace />
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500 text-white relative overflow-hidden">
