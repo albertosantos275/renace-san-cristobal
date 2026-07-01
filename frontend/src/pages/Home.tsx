@@ -76,6 +76,9 @@ export default function Home() {
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <a href="/afiche.html" className="text-primary-100 hover:text-white text-sm font-medium transition-colors">
+              Afiche
+            </a>
             {user ? (
               <>
                 {/* Logged-in: name links to the user's panel */}
