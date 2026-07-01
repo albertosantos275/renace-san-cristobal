@@ -3,7 +3,6 @@
 
 # build output
 **/dist
-frontend/public
 
 # env / secrets
 **/.env

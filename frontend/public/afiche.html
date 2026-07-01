@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oliver Santos — Afiche</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#0b1020;
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;
+  }
+  /* The poster is the original campaign image, shown at full size, centered. */
+  .poster{
+    position:relative;
+    display:inline-block;
+    max-height:100vh;
+    max-width:100vw;
+    line-height:0;
+  }
+  .poster img{
+    display:block;
+    max-height:100vh;
+    max-width:100vw;
+    height:auto;width:auto;
+  }
+  /* Invisible clickable area over the ¡INSCRÍBETE! button → goes to /registro.
+     (To see the hotspot while testing, uncomment the background line.) */
+  .cta-hotspot{
+    position:absolute;
+    left:10%;top:84%;width:80%;height:12%;
+    z-index:2;cursor:pointer;
+    /* background:rgba(255,0,0,.35); */
+  }
+</style>
+</head>
+<body>
+  <div class="poster">
+    <img src="afiche.jpg" alt="Oliver Santos — Si lo quieres como Alcalde. ¡Inscríbete!">
+    <a class="cta-hotspot" href="/registro" aria-label="Inscríbete"></a>
+  </div>
+</body>
+</html>
