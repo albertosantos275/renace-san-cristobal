@@ -1,21 +1,13 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { LogOut, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import api from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
 import { PublicStats } from '../types'
 
-/** Por debajo de este número NO mostramos el "0" gigante ni el "0% completado"
- *  (evita prueba social negativa en el lanzamiento). Ajustable. */
+/** Por debajo de este número de inscritos NO mostramos el contador ni la
+ *  barra de progreso (para no mostrar un "0" en el lanzamiento). Ajustable. */
 const THRESHOLD_MOSTRAR_CONTADOR = 300
-/** Meta de registros para la barra de progreso del hero. */
-const META = 10000
-
-const PROPUESTAS = [
-  'Gestión cercana y transparente',
-  'Obras y servicios para tu barrio',
-  'Tu voz decide las prioridades',
-]
 
 function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0)
@@ -63,9 +55,10 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
+  const meta = stats?.meta ?? 50000
   const total = stats?.total ?? 0
+  const pct = Math.min(Math.round((total / meta) * 100), 100)
   const mostrarContador = total >= THRESHOLD_MOSTRAR_CONTADOR
-  const pct = Math.min(Math.round((total / META) * 100), 100)
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500 text-white relative overflow-hidden">
@@ -77,17 +70,17 @@ export default function Home() {
 
       {/* NAV */}
       <nav className="relative z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
-          <div className="font-black text-xl sm:text-2xl lg:text-3xl tracking-tight leading-tight">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="font-black text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight">
             <span className="text-white">Renace</span>
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <>
                 <Link
                   to={isAdmin ? '/admin' : '/promotor'}
-                  className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
+                  className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors"
                   title="Ir a mi panel"
                 >
                   <div className="w-8 h-8 rounded-full bg-white/15 border border-white/25 flex items-center justify-center font-bold text-sm">
@@ -97,7 +90,7 @@ export default function Home() {
                 </Link>
                 <button
                   onClick={logout}
-                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium px-3 py-2 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium px-3 py-2 rounded-lg transition-all"
                   title="Cerrar sesión"
                 >
                   <LogOut size={16} />
@@ -105,10 +98,7 @@ export default function Home() {
                 </button>
               </>
             ) : (
-              <Link
-                to="/login"
-                className="text-primary-100 hover:text-white text-sm font-medium transition-colors rounded px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
-              >
+              <Link to="/login" className="text-primary-100 hover:text-white text-sm font-medium transition-colors">
                 Acceder
               </Link>
             )}
@@ -116,102 +106,65 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO — text/CTA/counter first (conversion), candidate photo second */}
-      <main className="relative z-10 flex-1 grid lg:grid-cols-2 items-center gap-8 lg:gap-12 max-w-6xl mx-auto px-4 py-6 lg:py-10 w-full">
+      {/* MAIN — poster + counter + share (fits mobile without scroll) */}
+      <main className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-4 lg:gap-12 max-w-6xl mx-auto px-4 pt-1 pb-4 lg:py-6 w-full">
 
-        {/* LEFT — real HTML headline, slogan, value, CTA, counter */}
-        <div className="order-1 text-center lg:text-left max-w-xl mx-auto lg:mx-0 w-full">
-          <p className="text-primary-100 font-semibold text-sm sm:text-base tracking-wide">
-            Si lo quieres como Alcalde,
-          </p>
-          <h1 className="font-black tracking-tight leading-[0.95] text-4xl sm:text-5xl lg:text-6xl mt-1">
-            OLIVER <span className="text-primary-200">SANTOS</span>
-          </h1>
-          <p className="mt-3 text-base sm:text-lg text-primary-50 font-medium">
-            Gestión cercana, resultados para todos.
-          </p>
+        {/* POSTER (clickable → register) — larger on mobile, close to the nav */}
+        <Link
+          to="/registro"
+          title="¡Inscríbete!"
+          className="block shrink-0 w-full max-w-[94vw] sm:max-w-sm lg:max-w-md"
+        >
+          <img
+            src="/afiche.jpg"
+            alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[62vh] w-auto lg:max-h-none lg:w-full"
+          />
+        </Link>
 
-          {/* Value block — fills the layout, gives real reasons to sign up */}
-          <ul className="mt-5 space-y-2 text-left inline-block">
-            {PROPUESTAS.map((p) => (
-              <li key={p} className="flex items-start gap-2.5 text-sm sm:text-base text-primary-50">
-                <CheckCircle2 size={20} className="text-yellow-300 shrink-0 mt-0.5" aria-hidden="true" />
-                <span>{p}</span>
-              </li>
-            ))}
-          </ul>
-
-          {/* CTA — real <a>, big, red, visible hover + focus */}
-          <div className="mt-7">
-            <Link
-              to="/registro"
-              className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black text-lg sm:text-xl uppercase tracking-wide px-8 py-4 rounded-2xl shadow-xl shadow-red-900/30 transition-all duration-200 hover:scale-[1.02] focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
-            >
-              ¡Inscríbete!
-              <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-            </Link>
-
-            {/* Purpose microcopy */}
-            <p className="mt-3 text-sm text-primary-100 max-w-md mx-auto lg:mx-0">
-              Regístrate para sumar tu apoyo y ayudar a decidir las prioridades de San Cristóbal.
-            </p>
-            {/* Privacy microcopy */}
-            <p className="mt-1.5 flex items-center justify-center lg:justify-start gap-1.5 text-xs text-primary-200 max-w-md mx-auto lg:mx-0">
-              <ShieldCheck size={14} className="shrink-0" aria-hidden="true" />
-              No compartimos tus datos. Solo te contactaremos sobre la campaña.
-            </p>
+        {/* COUNTER + SHARE */}
+        <div className="w-full max-w-md text-center lg:text-left">
+          {/* Live indicator */}
+          <div className="flex items-center gap-2 justify-center lg:justify-start text-primary-100 text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-0.5">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            En tiempo real
           </div>
 
-          {/* COUNTER — dark translucent card (guarantees contrast), threshold-aware */}
-          <div className="mt-7 rounded-2xl bg-primary-900/40 backdrop-blur-sm border border-white/15 p-4 sm:p-5 max-w-md mx-auto lg:mx-0">
-            <div className="flex items-center gap-2 justify-center lg:justify-start text-primary-100 text-[11px] font-semibold uppercase tracking-widest mb-2">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              En tiempo real
-            </div>
+          {loading ? (
+            <div className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none text-white/30">---</div>
+          ) : mostrarContador ? (
+            <>
+              <div className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none">
+                <AnimatedCounter target={total} />
+              </div>
+              <p className="text-xs sm:text-sm font-bold text-primary-200 uppercase tracking-widest mt-0.5 mb-3">
+                Ciudadanos Registrados
+              </p>
 
-            {loading ? (
-              <div className="h-10 flex items-center justify-center lg:justify-start text-white/40 text-sm">Cargando…</div>
-            ) : mostrarContador ? (
-              <>
-                <div className="text-4xl sm:text-5xl font-black leading-none">
-                  <AnimatedCounter target={total} />
-                </div>
-                <p className="text-xs font-bold text-primary-200 uppercase tracking-widest mt-1 mb-3">
-                  Ciudadanos registrados
-                </p>
-                <div className="flex justify-between text-sm mb-1.5">
-                  <span className="text-primary-100">Meta: {META.toLocaleString('es-DO')}</span>
+              {/* Progress */}
+              <div className="max-w-md mx-auto lg:mx-0">
+                <div className="flex justify-between text-[11px] sm:text-xs text-primary-100 mb-1">
+                  <span>Meta: {meta.toLocaleString('es-DO')}</span>
                   <span className="font-bold text-yellow-300">{pct}% completado</span>
                 </div>
-                <div className="h-2.5 bg-primary-900/70 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-yellow-300 rounded-full transition-all duration-1000"
-                    style={{ width: `${Math.max(pct, 2)}%` }}
+                    style={{ width: `${pct}%` }}
                   />
                 </div>
-              </>
-            ) : (
-              <>
-                <p className="text-xl sm:text-2xl font-black leading-tight">
-                  Sé de los primeros en sumarte
-                </p>
-                <p className="text-sm text-primary-100 mt-1.5">
-                  El movimiento está arrancando. Tu registro marca la diferencia.
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* RIGHT — candidate photo only (no burned-in text). Also taps through to register. */}
-        <div className="order-2 flex justify-center lg:justify-end">
-          <Link to="/registro" title="Inscríbete" className="block rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
-            <img
-              src="/oliver-recorte.jpg"
-              alt="Oliver Santos, candidato a Alcalde de San Cristóbal, sonriendo con traje azul"
-              className="rounded-2xl shadow-2xl w-auto max-h-[34vh] sm:max-h-[46vh] lg:max-h-[72vh] object-contain"
-            />
-          </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-2xl sm:text-3xl font-black leading-tight mt-1">
+                Sé de los primeros en sumarte
+              </p>
+              <p className="text-sm text-primary-100 mt-1.5">
+                El movimiento está arrancando. Tu registro marca la diferencia.
+              </p>
+            </>
+          )}
         </div>
       </main>
     </div>
