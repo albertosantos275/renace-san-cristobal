@@ -161,7 +161,7 @@ export default function Home() {
           to="/registro"
           className="inline-flex items-center gap-2 bg-white text-primary-700 hover:bg-yellow-300 hover:text-primary-800 font-bold text-base sm:text-lg px-8 py-3.5 rounded-2xl shadow-2xl transition-all duration-200 hover:scale-105"
         >
-          ÚNETE AL CENSO CIUDADANO
+          ÚNETE
           <ArrowRight size={20} />
         </Link>
 
@@ -193,10 +193,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* FOOTER */}
-      <footer className="relative z-10 text-center text-primary-200 text-xs py-4 px-4">
-        Movimiento Ciudadano · Censo Democrático Participativo
-      </footer>
     </div>
   )
 }
