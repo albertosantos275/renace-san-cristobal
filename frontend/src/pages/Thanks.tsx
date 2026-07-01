@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { CheckCircle, Share2, UserPlus, Home } from 'lucide-react'
+import { CheckCircle, Share2, Instagram, UserPlus, Home } from 'lucide-react'
 
 function whatsappShare() {
   const msg = encodeURIComponent('¡Me uní al Censo Ciudadano Renace San Cristóbal 2028! Tu voz también cuenta. Regístrate aquí: ' + window.location.origin + '/registro')
@@ -31,14 +31,31 @@ export default function Thanks() {
           </p>
         </div>
 
+        {/* Ayúdanos a crecer — share + follow */}
+        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="flex-1 h-px bg-gray-200" />
+          Ayúdanos a crecer
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
         <div className="space-y-3">
           <button
             onClick={whatsappShare}
-            className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold py-3.5 rounded-xl transition-all duration-200"
           >
             <Share2 size={18} />
             Compartir por WhatsApp
           </button>
+
+          <a
+            href="https://www.instagram.com/oliver_santos2424"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-semibold py-3.5 rounded-xl transition-all duration-200"
+          >
+            <Instagram size={18} />
+            Síguenos en Instagram
+          </a>
 
           <button
             onClick={() => navigate('/registro')}

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Share2, Instagram, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import api from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
 import { PublicStats } from '../types'
@@ -32,11 +32,6 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
   }, [target, duration])
 
   return <span ref={ref}>{count.toLocaleString('es-DO')}</span>
-}
-
-function whatsappShare() {
-  const msg = encodeURIComponent('¡Me uní al Censo Ciudadano Renace San Cristóbal 2028! Tu voz también cuenta. Regístrate aquí: ' + window.location.origin + '/registro')
-  window.open(`https://wa.me/?text=${msg}`, '_blank')
 }
 
 export default function Home() {
@@ -71,7 +66,7 @@ export default function Home() {
       {/* NAV */}
       <nav className="relative z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="font-bold text-base sm:text-lg tracking-tight">
+          <div className="font-black text-xl sm:text-2xl lg:text-3xl tracking-tight leading-tight">
             <span className="text-white">Renace</span>
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
@@ -121,12 +116,12 @@ export default function Home() {
         <Link
           to="/registro"
           title="¡Inscríbete!"
-          className="block shrink-0 w-full max-w-[88vw] sm:max-w-xs lg:max-w-sm"
+          className="block shrink-0 w-full max-w-[94vw] sm:max-w-sm lg:max-w-md"
         >
           <img
             src="/afiche.jpg"
             alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
-            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[52vh] w-auto lg:max-h-none lg:w-full"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[62vh] w-auto lg:max-h-none lg:w-full"
           />
         </Link>
 
@@ -145,7 +140,7 @@ export default function Home() {
           </p>
 
           {/* Progress */}
-          <div className="mb-5 max-w-md mx-auto lg:mx-0">
+          <div className="max-w-md mx-auto lg:mx-0">
             <div className="flex justify-between text-[11px] sm:text-xs text-primary-100 mb-1">
               <span>Meta: {meta.toLocaleString('es-DO')}</span>
               <span className="font-bold text-yellow-300">{pct}% completado</span>
@@ -155,33 +150,6 @@ export default function Home() {
                 className="h-full bg-yellow-300 rounded-full transition-all duration-1000"
                 style={{ width: `${pct}%` }}
               />
-            </div>
-          </div>
-
-          {/* Ayúdanos a crecer — compact share + follow */}
-          <div className="max-w-md mx-auto lg:mx-0">
-            <div className="flex items-center gap-3 text-primary-200 text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-2">
-              <div className="flex-1 h-px bg-white/20" />
-              Ayúdanos a crecer
-              <div className="flex-1 h-px bg-white/20" />
-            </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                onClick={whatsappShare}
-                className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1ebe57] text-white text-sm font-semibold px-3 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02]"
-              >
-                <Share2 size={16} />
-                Compartir
-              </button>
-              <a
-                href="https://www.instagram.com/oliver_santos2424"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white text-sm font-semibold px-3 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02]"
-              >
-                <Instagram size={16} />
-                Seguir
-              </a>
             </div>
           </div>
         </div>
