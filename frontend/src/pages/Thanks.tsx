@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CheckCircle, Share2, Instagram, UserPlus, Home } from 'lucide-react'
 
 function whatsappShare() {
-  const msg = encodeURIComponent('¡Me uní al Censo Ciudadano Renace San Cristóbal 2028! Tu voz también cuenta. Regístrate aquí: ' + window.location.origin + '/registro')
+  const msg = encodeURIComponent('¡Me uní a Renace San Cristóbal 2028! Tu voz también cuenta. Regístrate aquí: ' + window.location.origin + '/registro')
   window.open(`https://wa.me/?text=${msg}`, '_blank')
 }
 
@@ -21,7 +21,7 @@ export default function Thanks() {
         </h1>
 
         <p className="text-gray-600 leading-relaxed mb-8">
-          Gracias por unirte al <strong>Censo Ciudadano Renace San Cristóbal 2028</strong>.
+          Gracias por unirte a <strong>Renace San Cristóbal 2028</strong>.
           Tu voz es importante y juntos construiremos el San Cristóbal que merecemos.
         </p>
 

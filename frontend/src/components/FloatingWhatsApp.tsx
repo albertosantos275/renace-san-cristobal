@@ -9,7 +9,7 @@ export function shareOnWhatsApp() {
   const url = window.location.origin
   const msg =
     '🇩🇴 *Renace San Cristóbal 2028*\n\n' +
-    'Únete al Censo Ciudadano. Tu voz cuenta y juntos construiremos el San Cristóbal que merecemos.\n\n' +
+    'Únete. Tu voz cuenta y juntos construiremos el San Cristóbal que merecemos.\n\n' +
     '👉 Regístrate aquí: ' + url
   window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer')
 }

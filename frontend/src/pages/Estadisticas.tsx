@@ -11,7 +11,7 @@ export default function Estadisticas() {
         </div>
         <div>
           <h1 className="text-2xl font-black text-gray-900">Estadísticas</h1>
-          <p className="text-gray-500 text-sm">Resumen del censo ciudadano</p>
+          <p className="text-gray-500 text-sm">Resumen de registros</p>
         </div>
       </div>
 

@@ -44,7 +44,6 @@ export default function Register() {
           </Link>
           <div>
             <div className="font-bold text-sm">Renace San Cristóbal 2028</div>
-            <div className="text-primary-300 text-xs">Censo Ciudadano</div>
           </div>
         </div>
       </div>
