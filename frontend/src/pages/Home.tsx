@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { LogOut, LogIn } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 import api from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
 import { PublicStats } from '../types'
@@ -41,7 +41,7 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
 export default function Home() {
   const [stats, setStats] = useState<PublicStats | null>(null)
   const [loading, setLoading] = useState(true)
-  const { user, logout, isAdmin } = useAuth()
+  const { user, isAdmin } = useAuth()
 
   useEffect(() => {
     api.get('/stats/public')
@@ -88,37 +88,15 @@ export default function Home() {
             <span className="text-primary-200 whitespace-nowrap">2028</span>
           </div>
           <div className="shrink-0 flex items-center gap-2">
-            {user ? (
-              <>
-                <Link
-                  to={isAdmin ? '/admin' : '/promotor'}
-                  className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors"
-                  title="Ir a mi panel"
-                >
-                  <div className="w-8 h-8 rounded-full bg-white/15 border border-white/25 flex items-center justify-center font-bold text-sm">
-                    {user.nombre?.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="hidden sm:inline text-sm font-medium max-w-[8rem] truncate">{user.nombre}</span>
-                </Link>
-                <button
-                  onClick={logout}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all"
-                  title="Cerrar sesión"
-                  aria-label="Cerrar sesión"
-                >
-                  <LogOut size={18} />
-                </button>
-              </>
-            ) : (
-              <Link
-                to="/login"
-                title="Acceder"
-                aria-label="Acceder"
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
-              >
-                <LogIn size={18} />
-              </Link>
-            )}
+            {/* Home is public-only (logged-in staff are redirected to their panel) */}
+            <Link
+              to="/login"
+              title="Acceder"
+              aria-label="Acceder"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
+            >
+              <LogIn size={18} />
+            </Link>
           </div>
         </div>
       </nav>
