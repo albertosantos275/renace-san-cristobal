@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search, Users, ChevronLeft, ChevronRight } from 'lucide-react'
 import api from '../../lib/api'
 import { Citizen, NIVEL_APOYO_LABELS, NivelApoyo } from '../../types'
@@ -15,8 +16,10 @@ export default function PromoterMyCitizens() {
   const [citizens, setCitizens] = useState<Citizen[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
+  const [searchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [sector, setSector] = useState('')
+  const [voluntario, setVoluntario] = useState(searchParams.get('voluntario') === 'true' ? 'true' : '')
   const [sectors, setSectors] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const limit = 20
@@ -27,12 +30,13 @@ export default function PromoterMyCitizens() {
       const params: any = { page, limit }
       if (search) params.search = search
       if (sector) params.sector = sector
+      if (voluntario) params.voluntario = voluntario
       const r = await api.get('/citizens', { params })
       setCitizens(r.data.citizens)
       setTotal(r.data.total)
     } catch {}
     setLoading(false)
-  }, [page, search, sector])
+  }, [page, search, sector, voluntario])
 
   useEffect(() => { fetch() }, [fetch])
   useEffect(() => { api.get('/sectors').then(r => setSectors(r.data.map((s: any) => s.nombre))).catch(() => {}) }, [])
@@ -43,7 +47,9 @@ export default function PromoterMyCitizens() {
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-black text-gray-900">Mis Ciudadanos</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Has registrado {total} ciudadanos</p>
+        <p className="text-sm text-gray-500 mt-0.5">
+          {voluntario === 'true' ? `${total} voluntarios entre tus ciudadanos` : `Has registrado ${total} ciudadanos`}
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -54,6 +60,10 @@ export default function PromoterMyCitizens() {
         <select value={sector} onChange={e => { setSector(e.target.value); setPage(1) }} className="input-field py-2.5 text-sm max-w-48">
           <option value="">Todos los sectores</option>
           {sectors.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={voluntario} onChange={e => { setVoluntario(e.target.value); setPage(1) }} className="input-field py-2.5 text-sm max-w-48">
+          <option value="">Todos</option>
+          <option value="true">Solo voluntarios</option>
         </select>
       </div>
 

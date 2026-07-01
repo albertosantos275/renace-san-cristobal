@@ -83,10 +83,11 @@ export default function PromoterDashboard() {
           <div className="text-4xl font-black text-primary-500">{loading ? '—' : stats.semana}</div>
           <div className="text-sm text-gray-500 mt-1 font-medium">Esta Semana</div>
         </div>
-        <div className="card text-center">
+        <Link to="/promotor/mis-ciudadanos?voluntario=true" className="card text-center hover:shadow-md transition-all">
           <div className="text-4xl font-black text-purple-600">{loading ? '—' : stats.voluntarios}</div>
           <div className="text-sm text-gray-500 mt-1 font-medium">Voluntarios</div>
-        </div>
+          <div className="text-xs text-primary-500 mt-0.5">Ver lista →</div>
+        </Link>
       </div>
 
       {/* My rank */}

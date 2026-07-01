@@ -197,6 +197,39 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Voluntarios por promotor */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <Heart size={18} className="text-red-500" />
+          <h2 className="text-lg font-bold text-gray-900">Voluntarios por Promotor</h2>
+          <span className="ml-auto text-sm text-gray-400">{stats.voluntarios.toLocaleString('es-DO')} en total</span>
+        </div>
+        {(() => {
+          const porVol = [...stats.topPromotores].sort((a, b) => Number(b.voluntarios) - Number(a.voluntarios))
+          const max = Number(porVol[0]?.voluntarios) || 1
+          return porVol.some(p => Number(p.voluntarios) > 0) ? (
+            <div className="space-y-3">
+              {porVol.slice(0, 8).map((p, i) => (
+                <div key={p.id} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 bg-red-50 text-red-600">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-gray-800 truncate">{p.nombre}</div>
+                    <div className="h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                      <div className="h-full bg-red-400 rounded-full" style={{ width: `${Math.round((Number(p.voluntarios) / max) * 100)}%` }} />
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold text-red-500 flex-shrink-0">{Number(p.voluntarios).toLocaleString('es-DO')}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="h-24 flex items-center justify-center text-gray-300 text-sm">Aún no hay voluntarios registrados</div>
+          )
+        })()}
+      </div>
+
       {/* Prioridades */}
       {stats.prioridades.length > 0 && (
         <div className="card">

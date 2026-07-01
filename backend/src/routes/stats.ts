@@ -137,8 +137,11 @@ router.get('/admin', authenticate, requireAdmin, async (_req, res: Response) => 
     })
     const topPromotores = await Promise.all(
       promoterUsers.map(async u => {
-        const count = await prisma.citizen.count({ where: { registradoPorId: u.id } })
-        return { id: u.id, nombre: u.nombre, count }
+        const [count, voluntarios] = await Promise.all([
+          prisma.citizen.count({ where: { registradoPorId: u.id } }),
+          prisma.citizen.count({ where: { registradoPorId: u.id, voluntario: true } }),
+        ])
+        return { id: u.id, nombre: u.nombre, count, voluntarios }
       })
     )
     topPromotores.sort((a, b) => b.count - a.count)
