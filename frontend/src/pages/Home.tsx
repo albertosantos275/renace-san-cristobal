@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { LogOut } from 'lucide-react'
+import { LogOut, LogIn } from 'lucide-react'
 import api from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
 import { PublicStats } from '../types'
@@ -70,13 +70,13 @@ export default function Home() {
 
       {/* NAV */}
       <nav className="relative z-10">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          {/* Fixed size — does NOT change across breakpoints */}
-          <div className="font-black text-3xl tracking-tight leading-tight">
+        <div className="max-w-6xl mx-auto px-4 py-3 relative flex items-center justify-center">
+          {/* Centered with the poster; fixed size — does NOT change across breakpoints */}
+          <div className="font-black text-3xl tracking-tight leading-tight text-center">
             <span className="text-white">Renace</span>
             <span className="text-primary-200 ml-1">San Cristóbal 2028</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
             {user ? (
               <>
                 <Link
@@ -91,19 +91,21 @@ export default function Home() {
                 </Link>
                 <button
                   onClick={logout}
-                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium px-3 py-2 rounded-lg transition-all"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all"
                   title="Cerrar sesión"
+                  aria-label="Cerrar sesión"
                 >
-                  <LogOut size={16} />
-                  <span className="hidden sm:inline">Salir</span>
+                  <LogOut size={18} />
                 </button>
               </>
             ) : (
               <Link
                 to="/login"
-                className="bg-white text-primary-700 hover:bg-primary-50 font-bold text-sm px-5 py-2.5 rounded-lg shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
+                title="Acceder"
+                aria-label="Acceder"
+                className="flex items-center justify-center w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-700"
               >
-                Acceder
+                <LogIn size={18} />
               </Link>
             )}
           </div>
@@ -117,12 +119,12 @@ export default function Home() {
         <Link
           to="/registro"
           title="¡Inscríbete!"
-          className="block shrink-0 w-full max-w-[95vw] sm:max-w-md lg:max-w-lg"
+          className="block shrink-0 w-full max-w-[96vw] sm:max-w-lg lg:max-w-xl"
         >
           <img
             src="/afiche.jpg"
             alt="Oliver Santos — Si lo quieres como Alcalde, ¡Inscríbete!"
-            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[72vh] w-auto lg:max-h-[82vh] lg:w-auto"
+            className="mx-auto rounded-2xl shadow-2xl transition-transform duration-200 hover:scale-[1.02] max-h-[80vh] w-auto lg:max-h-[86vh] lg:w-auto"
           />
         </Link>
 
